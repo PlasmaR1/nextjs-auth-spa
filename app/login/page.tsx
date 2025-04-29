@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 
-// 登录表单的数据类型
 interface LoginFormData {
   email: string;
   password: string;
@@ -35,7 +34,7 @@ export default function LoginPage() {
   
     if (user.email === data.email && user.password === data.password) {
       alert('Login successful！');
-      localStorage.setItem('isLoggedIn', 'true');  // 记录登录状态
+      localStorage.setItem('isLoggedIn', 'true');  // Remember login status
       router.push('/home');
       window.location.reload(); //refresh pages to show login details
     } else {
@@ -50,7 +49,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-80">
         <h1 className="text-2xl font-bold mb-4 text-center">Welcome to SPA by Zach</h1>
 
-        {/* 邮箱输入框 */}
+        {/* Eamil input */}
         <input
           type="email"
           placeholder="Emter your Email"
@@ -59,7 +58,7 @@ export default function LoginPage() {
         />
         {errors.email?.message && <p className="text-red-500 text-sm">{errors.email?.message}</p>}
 
-        {/* 密码输入框 */}
+        {/* Password input */}
         <input
           type="password"
           placeholder="Emter your Password"
@@ -68,7 +67,7 @@ export default function LoginPage() {
         />
         {errors.password?.message && <p className="text-red-500 text-sm">{errors.password?.message}</p>}
 
-        {/* 登录按钮 */}
+        {/* Login Button */}
         <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
           Login
         </button>

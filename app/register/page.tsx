@@ -37,12 +37,7 @@ const onSubmit = (data: RegisterFormData) => {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-80">
         <h1 className="text-2xl font-bold mb-4 text-center">Register</h1>
 
-        <div className="bg-blue-500 text-white p-4 rounded">
-            Tailwind 是真的！
-        </div>
-
-
-        {/* 邮箱输入框 */}
+        {/* Email input 邮箱输入框 */}
         <input
           type="email"
           placeholder="Please enter email"
@@ -51,7 +46,7 @@ const onSubmit = (data: RegisterFormData) => {
         />
         {errors.email?.message && <p className="text-red-500 text-sm">{errors.email?.message}</p>}
 
-        {/* 密码输入框 */}
+        {/* Password input 密码输入框 */}
         <input
           type="password"
           placeholder="please enter the password"
@@ -66,7 +61,7 @@ const onSubmit = (data: RegisterFormData) => {
         />
         {errors.password?.message && <p className="text-red-500 text-sm">{errors.password?.message}</p>}
 
-        {/* 注册按钮 */}
+        {/* Register buttom 注册按钮 */}
         <button type="submit" className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
           Register
         </button>
