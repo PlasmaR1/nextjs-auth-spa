@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-// ✅ 第一步：添加表单字段的类型
+//  添加表单字段的类型
 interface RegisterFormData {
   email: string;
   password: string;
 }
 
 export default function RegisterPage() {
-  // ✅ 第二步：告诉 useForm 使用这个类型
+  //  告诉 useForm 使用这个类型
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
 
 // 在组件内部添加：
