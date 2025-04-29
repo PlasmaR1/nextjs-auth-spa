@@ -15,7 +15,7 @@ export default function HomePage() {
   
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn'); // ✅ 只清除登录状态，不删注册用户
+    localStorage.removeItem('isLoggedIn'); // 只清除登录状态，不删除注册用户
     router.push('/login');
     window.location.reload();
   };
