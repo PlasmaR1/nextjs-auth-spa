@@ -23,7 +23,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-bold">Welcome to the homepage！🎉</h1>
+      <h1 className="text-2xl font-bold">Welcome to mypage！🎉</h1>
       <button
         onClick={handleLogout}
         className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
