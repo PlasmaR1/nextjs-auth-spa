@@ -49,7 +49,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-80">
         <h1 className="text-2xl font-bold mb-4 text-center">Welcome to SPA by Zach</h1>
 
-        {/* Eamil input */}
+        {/* Email input */}
         <input
           type="email"
           placeholder="Emter your Email"
