@@ -1,103 +1,143 @@
-import Image from "next/image";
+"use client"; //客户端组件
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [content, setContent] = useState(""); // 输入框内容
+  const [posts, setPosts] = useState<any[]>([]); // 所有帖子
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+  // 读取登录状态
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loginStatus === "true");
+
+    // 初始化加载帖子
+    const storedPosts = localStorage.getItem("posts");
+    if (storedPosts) {
+      setPosts(JSON.parse(storedPosts));
+    }
+  }, []);
+
+  // 发布按钮点击逻辑
+  const handlePost = () => {
+    const userData = localStorage.getItem("registeredUser");
+    if (!userData) return;
+    const { email } = JSON.parse(userData);
+
+    
+  
+    const newPost = {
+      email,
+      content,
+      timestamp: new Date().toLocaleString(),
+      imageUrl: imagePreview || null, // 加入图片字段
+    };
+  
+    const updatedPosts = [newPost, ...posts];
+    setPosts(updatedPosts);
+    localStorage.setItem("posts", JSON.stringify(updatedPosts));
+  
+    // 清空输入
+    setContent("");
+    setImageFile(null);
+    setImagePreview(null);
+  };
+  
+  const handleDelete = (index: number) => {
+    const updated = [...posts];
+    updated.splice(index, 1);
+    setPosts(updated);
+    localStorage.setItem("posts", JSON.stringify(updated));
+  };
+  
+
+
+  return (
+    <main className="p-4 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">🌐 欢迎来到动态广场</h1>
+
+      {isLoggedIn ? (
+        <div className="mb-6">
+          <textarea
+            className="w-full border p-2 rounded resize-none mb-2"
+            rows={3}
+            placeholder="Type Something"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+
+          <input   //image loader 图片上传功能
+            type="file" 
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setImageFile(file);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setImagePreview(reader.result as string);
+                };
+                reader.readAsDataURL(file); // 把图片转为 base64
+              }
+            }}
+            className="mb-2"
+          />
+          {imagePreview && (
+            <div className="mb-2">
+              <img src={imagePreview} alt="预览图" className="max-h-40 rounded" />
+            </div>
+          )}
+          <button
+            onClick={handlePost}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            disabled={!content.trim()}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            发布
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      ) : (  //If else 三元表达式
+        <p className="text-red-600 mb-4">⚠️ 请先登录才能发布内容。</p>
+      )}
+
+      <div className="space-y-4">
+        {posts.length === 0 ? (
+          <p className="text-gray-500">暂无动态。</p>
+        ) : (
+          posts.map((post, index) => {
+            const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+            const userData = loginStatus ? localStorage.getItem("registeredUser") : null;
+            const currentEmail = userData ? JSON.parse(userData).email : null;
+            const isOwner = loginStatus && currentEmail === post.email;
+
+          
+            return (
+              <div key={index} className="border p-3 rounded shadow">
+                <p className="text-sm text-gray-500">{post.email} · {post.timestamp}</p>
+                <p className="mt-1 whitespace-pre-line">{post.content}</p>
+          
+                {post.imageUrl && (
+                  <img src={post.imageUrl} alt="uploadedimages" className="mt-2 max-h-60 rounded" />
+                )}
+          
+                {isOwner && (
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:underline"
+                    >
+                      删除
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })
+          
+        )}
+      </div>
+    </main>
   );
 }
