@@ -83,16 +83,17 @@ export default function Home() {
                 reader.readAsDataURL(file); // 把图片转为 base64
               }
             }}
-            className="mb-2"
+            className="mb-5"
           />
           {imagePreview && (
-            <div className="mb-2">
+            <div className="mb-10">
               <img src={imagePreview} alt="预览图" className="max-h-40 rounded" />
             </div>
           )}
+          <div className="flex justify-end"></div>
           <button
             onClick={handlePost}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-11 py-2 rounded hover:bg-blue-700"
             disabled={!content.trim()}
           >
             发布
