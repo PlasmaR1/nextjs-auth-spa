@@ -96,7 +96,7 @@ export default function Home() {
             className="bg-blue-600 text-white px-11 py-2 rounded hover:bg-blue-800"
             disabled={!content.trim()}
           >
-            发布
+            Post
           </button>
         </div>
       ) : (  //If else 
@@ -129,7 +129,7 @@ export default function Home() {
                       onClick={() => handleDelete(index)}
                       className="text-red-600 hover:underline"
                     >
-                      删除
+                      Delete
                     </button>
                   </div>
                 )}
