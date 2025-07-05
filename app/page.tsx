@@ -1,59 +1,78 @@
-"use client"; //客户端组件
+"use client";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [content, setContent] = useState(""); // 输入框内容
-  const [posts, setPosts] = useState<any[]>([]); // 所有帖子
+  const [content, setContent] = useState("");
+  const [posts, setPosts] = useState<any[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
-
-  // 读取登录状态
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLoggedIn");
-    setIsLoggedIn(loginStatus === "true");
-
-    // 初始化加载帖子
-    const storedPosts = localStorage.getItem("posts");
-    if (storedPosts) {
-      setPosts(JSON.parse(storedPosts));
-    }
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    const email = localStorage.getItem("userEmail");
+    setIsLoggedIn(loginStatus);
+    setUserEmail(email);
+    fetchPosts();
   }, []);
 
-  // 发布按钮点击逻辑
-  const handlePost = () => {
-    const userData = localStorage.getItem("registeredUser");
-    if (!userData) return;
-    const { email } = JSON.parse(userData);
+  const fetchPosts = async () => {
+    try {
+      const res = await fetch("/api/posts");
+      const data = await res.json();
+      setPosts(data);
+    } catch (error) {
+      console.error("Failed to fetch posts", error);
+    }
+  };
 
-    
-  
-    const newPost = {
-      email,
+  const handlePost = async () => {
+
+    console.log("💬 正在尝试发送：", {
+      email: userEmail,
       content,
-      timestamp: new Date().toLocaleString(),
-      imageUrl: imagePreview || null, // 加入图片字段
-    };
-  
-    const updatedPosts = [newPost, ...posts];
-    setPosts(updatedPosts);
-    localStorage.setItem("posts", JSON.stringify(updatedPosts));
-  
-    // 清空输入
-    setContent("");
-    setImageFile(null);
-    setImagePreview(null);
-  };
-    //Delete buttom
-  const handleDelete = (index: number) => {
-    const updated = [...posts];
-    updated.splice(index, 1);
-    setPosts(updated);
-    localStorage.setItem("posts", JSON.stringify(updated));
-  };
-  
+      imageUrl: imagePreview,
+    });
 
+    if (!content.trim() || !userEmail) return;
+
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, imageUrl: imagePreview, email: userEmail }),
+    });
+
+    console.log("✅ 发帖响应：", res.status);
+    const result = await res.json();
+    console.log("✅ 返回数据：", result);
+
+    if (res.ok) {
+      setContent("");
+      setImageFile(null);
+      setImagePreview(null);
+      fetchPosts();
+    } else {
+      alert("Failed to post");
+    }
+  };
+
+  const handleDelete = async (postId: number) => {
+    if (!userEmail) return;
+
+    const res = await fetch(`/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: userEmail }),
+    });
+
+    if (res.ok) {
+      fetchPosts();
+    } else {
+      const result = await res.json();
+      alert("Delete failed: " + result.error);
+    }
+  };
 
   return (
     <main className="p-4 max-w-xl mx-auto">
@@ -69,8 +88,8 @@ export default function Home() {
             onChange={(e) => setContent(e.target.value)}
           />
 
-          <input   //image loader 图片上传功能
-            type="file" 
+          <input
+            type="file"
             accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -80,53 +99,47 @@ export default function Home() {
                 reader.onloadend = () => {
                   setImagePreview(reader.result as string);
                 };
-                reader.readAsDataURL(file); // 把图片转为 base64
+                reader.readAsDataURL(file);
               }
             }}
             className="mb-5"
           />
           {imagePreview && (
             <div className="mb-10">
-              <img src={imagePreview} alt="预览图" className="max-h-40 rounded" />
+              <img src={imagePreview} alt="image" className="max-h-40 rounded" />
             </div>
           )}
-          <div className="flex justify-end"></div>
+
           <button
             onClick={handlePost}
             className="bg-blue-600 text-white px-11 py-2 rounded hover:bg-blue-800"
             disabled={!content.trim()}
           >
-            Post
+            发布
           </button>
         </div>
-      ) : (  //If else 
-        <p className="text-red-600 mb-4">⚠️ Please Login to publish content </p>
+      ) : (
+        <p className="text-red-600 mb-4">⚠️ Please login </p>
       )}
 
       <div className="space-y-4">
         {posts.length === 0 ? (
-          <p className="text-gray-500">No Activity</p>
+          <p className="text-gray-500">Nothing here so far </p>
         ) : (
-          posts.map((post, index) => {
-            const loginStatus = localStorage.getItem("isLoggedIn") === "true";
-            const userData = loginStatus ? localStorage.getItem("registeredUser") : null;
-            const currentEmail = userData ? JSON.parse(userData).email : null;
-            const isOwner = loginStatus && currentEmail === post.email;
+          posts.map((post) => {
+            const isOwner = userEmail === post.user.email;
 
-          
             return (
-              <div key={index} className="border p-3 rounded shadow">
-                <p className="text-sm text-gray-500">{post.email} · {post.timestamp}</p>
+              <div key={post.id} className="border p-3 rounded shadow">
+                <p className="text-sm text-gray-500">{post.user.email} · {new Date(post.timestamp).toLocaleString()}</p>
                 <p className="mt-1 whitespace-pre-line">{post.content}</p>
-          
                 {post.imageUrl && (
                   <img src={post.imageUrl} alt="uploadedimages" className="mt-2 max-h-60 rounded" />
                 )}
-          
                 {isOwner && (
                   <div className="flex gap-2 mt-2">
                     <button
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleDelete(post.id)}
                       className="text-red-600 hover:underline"
                     >
                       Delete
@@ -136,7 +149,6 @@ export default function Home() {
               </div>
             );
           })
-          
         )}
       </div>
     </main>

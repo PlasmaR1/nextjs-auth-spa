@@ -9,7 +9,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
-    const storedUser = localStorage.getItem('registeredUser'); // 👈 拿 registeredUser
+    const storedUser = localStorage.getItem('registeredUser'); //  拿 registeredUser
     setIsLoggedIn(!!loggedIn);
 
     if (storedUser) {
@@ -21,7 +21,10 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('registeredUser'); // 记得登出清 registeredUser
+    localStorage.removeItem('userEmail'); //  清除邮箱
+  localStorage.removeItem('registeredUser'); // registeredUser清除
     window.location.href = '/login'; // 强制跳回登录
+
   };
 
   return (
