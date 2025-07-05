@@ -28,48 +28,45 @@ export default function Home() {
   };
 
   const handlePost = async () => {
-
-    console.log("💬 正在尝试发送：", {
-      email: userEmail,
-      content,
-      imageUrl: imagePreview,
-    });
-
-    if (!content.trim() || !userEmail) return;
+    const token = localStorage.getItem("token");
+    if (!token || !content.trim()) return;
 
     const res = await fetch("/api/posts", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content, imageUrl: imagePreview, email: userEmail }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ content, imageUrl: imagePreview }),
     });
 
-    console.log("✅ 发帖响应：", res.status);
     const result = await res.json();
-    console.log("✅ 返回数据：", result);
-
     if (res.ok) {
       setContent("");
       setImageFile(null);
       setImagePreview(null);
       fetchPosts();
     } else {
-      alert("Failed to post");
+      alert("Failed to post: " + result.error);
     }
   };
 
   const handleDelete = async (postId: number) => {
-    if (!userEmail) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
     const res = await fetch(`/api/posts/${postId}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: userEmail }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
+    const result = await res.json();
     if (res.ok) {
       fetchPosts();
     } else {
-      const result = await res.json();
       alert("Delete failed: " + result.error);
     }
   };
@@ -124,14 +121,16 @@ export default function Home() {
 
       <div className="space-y-4">
         {posts.length === 0 ? (
-          <p className="text-gray-500">Nothing here so far </p>
+          <p className="text-gray-500">Nothing here so far</p>
         ) : (
           posts.map((post) => {
             const isOwner = userEmail === post.user.email;
 
             return (
               <div key={post.id} className="border p-3 rounded shadow">
-                <p className="text-sm text-gray-500">{post.user.email} · {new Date(post.timestamp).toLocaleString()}</p>
+                <p className="text-sm text-gray-500">
+                  {post.user.email} · {new Date(post.timestamp).toLocaleString()}
+                </p>
                 <p className="mt-1 whitespace-pre-line">{post.content}</p>
                 {post.imageUrl && (
                   <img src={post.imageUrl} alt="uploadedimages" className="mt-2 max-h-60 rounded" />

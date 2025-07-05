@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { verify } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
+const SECRET = process.env.JWT_SECRET || 'default-secret-key';
 
+// 获取所有帖子（不需要认证）
 export async function GET() {
   const posts = await prisma.post.findMany({
     orderBy: { timestamp: 'desc' },
@@ -11,14 +14,30 @@ export async function GET() {
   return NextResponse.json(posts);
 }
 
-export async function POST(req: Request) {
+// 创建帖子（需要认证）
+export async function POST(req: NextRequest) {
   try {
-    const { content, imageUrl, email } = await req.json();
-    if (!content || !email) {
-      return NextResponse.json({ error: 'Missing content or user email' }, { status: 400 });
+    const authHeader = req.headers.get('authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const token = authHeader.split(' ')[1];
+
+    let payload: any;
+    try {
+      payload = verify(token, SECRET);
+    } catch (err) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
+    }
+
+    const { content, imageUrl } = await req.json();
+    if (!content) {
+      return NextResponse.json({ error: 'Missing content' }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: payload.email } });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -26,7 +45,7 @@ export async function POST(req: Request) {
     const post = await prisma.post.create({
       data: {
         content,
-        ...(imageUrl ? { imageUrl } : {}), // 仅在存在 imageUrl 时添加
+        imageUrl: imageUrl || null,
         userId: user.id,
       },
     });

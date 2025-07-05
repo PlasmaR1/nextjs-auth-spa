@@ -38,6 +38,7 @@ export default function LoginPage() {
       }
 
       // 登录成功存储
+      localStorage.setItem('token', result.token);
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('registeredUser', JSON.stringify(result.user));
       localStorage.setItem('userEmail', result.user.email);

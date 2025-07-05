@@ -1,18 +1,31 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { verify } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
+const SECRET = process.env.JWT_SECRET!;
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const postId = parseInt(params.id);
-    const { email } = await req.json();
-
-    if (!email) {
-      return NextResponse.json({ error: 'Missing user email' }, { status: 400 });
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const token = authHeader.split(' ')[1];
+
+    let payload: any;
+    try {
+      payload = verify(token, SECRET);
+    } catch (err) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
+    }
+
+    const postId = parseInt(params.id);
+    const user = await prisma.user.findUnique({ where: { email: payload.email } });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -28,10 +41,9 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     await prisma.post.delete({ where: { id: postId } });
     return NextResponse.json({ message: 'Post deleted successfully' });
+
   } catch (error) {
     console.error('Delete error:', error);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
-    
   }
-  
 }
