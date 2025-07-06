@@ -16,7 +16,7 @@ model User {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  content   String
+  content   String   @db.Text
   imageUrl  String?  @db.LongText
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
