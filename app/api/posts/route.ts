@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { verify } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
-const SECRET = process.env.JWT_SECRET || 'default-secret-key';
+const SECRET = process.env.JWT_SECRET!;
 
 // 获取所有帖子（不需要认证）
 export async function GET() {
