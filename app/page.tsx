@@ -42,6 +42,7 @@ export default function Home() {
 
     const result = await res.json();
     if (res.ok) {
+      alert('✅ Please wait for admin approval'); 
       setContent("");
       setImageFile(null);
       setImagePreview(null);
@@ -114,7 +115,9 @@ export default function Home() {
           >
             Post
           </button>
+  
         </div>
+        
       ) : (
         <p className="text-red-600 mb-4">⚠️ Please login </p>
       )}
@@ -152,4 +155,5 @@ export default function Home() {
       </div>
     </main>
   );
+  
 }
