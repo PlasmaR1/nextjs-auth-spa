@@ -112,7 +112,7 @@ export default function Home() {
             className="bg-blue-600 text-white px-11 py-2 rounded hover:bg-blue-800"
             disabled={!content.trim()}
           >
-            发布
+            Post
           </button>
         </div>
       ) : (

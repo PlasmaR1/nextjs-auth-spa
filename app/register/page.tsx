@@ -8,6 +8,7 @@ interface RegisterFormData {
   email: string;
   password: string;
 }
+const res = await fetch("/api/posts", { cache: "no-store" });
 
 export default function RegisterPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();

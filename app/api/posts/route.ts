@@ -8,9 +8,12 @@ const SECRET = process.env.JWT_SECRET!;
 // 获取所有帖子（不需要认证）
 export async function GET() {
   const posts = await prisma.post.findMany({
+    where: { approved: true }, 
     orderBy: { timestamp: 'desc' },
     include: { user: true },
   });
+
+  console.log("🔍 Approved posts:", posts); 
   return NextResponse.json(posts);
 }
 
@@ -47,6 +50,7 @@ export async function POST(req: NextRequest) {
         content,
         imageUrl: imageUrl || null,
         userId: user.id,
+        approved: false,
       },
     });
 
