@@ -6,10 +6,7 @@ const prisma = new PrismaClient()
 const SECRET = process.env.JWT_SECRET!
 const ADMIN_EMAIL = 'zachzou@foxmail.com'
 
-export async function PATCH(
-  req: NextRequest,
-  context: { params: Record<string, string> } // ✅ 这里必须写成 Record<string, string>
-) {
+export async function PATCH(req: NextRequest, context: any) {
   const authHeader = req.headers.get('authorization')
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -28,7 +25,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const postId = parseInt(context.params.id, 10)
+  const postId = parseInt(context.params.id)
   if (isNaN(postId)) {
     return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
   }
