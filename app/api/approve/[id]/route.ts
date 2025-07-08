@@ -1,39 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { verify } from 'jsonwebtoken'
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { verify } from 'jsonwebtoken';
 
-const prisma = new PrismaClient()
-const SECRET = process.env.JWT_SECRET!
-const ADMIN_EMAIL = 'zachzou@foxmail.com'
+const prisma = new PrismaClient();
+const SECRET = process.env.JWT_SECRET!;
+const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
-export async function PATCH(req: NextRequest, context: any) {
-  const authHeader = req.headers.get('authorization')
+export async function PATCH(req: NextRequest, context: { params: Record<string, string> }) {
+  const authHeader = req.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const token = authHeader.split(' ')[1]
-  let payload: any
+  const token = authHeader.split(' ')[1];
+  let payload: any;
 
   try {
-    payload = verify(token, SECRET)
+    payload = verify(token, SECRET);
   } catch {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 403 })
+    return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
   }
 
   if (payload.email !== ADMIN_EMAIL) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(context.params.id)
-  if (isNaN(postId)) {
-    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
-  }
-
+  const postId = parseInt(context.params.id);
   const updated = await prisma.post.update({
     where: { id: postId },
-    data: { approved: true }
-  })
+    data: { approved: true },
+  });
 
-  return NextResponse.json({ message: 'Post approved', post: updated })
+  return NextResponse.json({ message: 'Post approved', post: updated });
 }
