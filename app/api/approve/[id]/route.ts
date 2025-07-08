@@ -8,8 +8,10 @@ const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const authHeader = req.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,7 +30,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(params.id);
+  const postId = Number(id);
   if (isNaN(postId)) {
     return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
   }
