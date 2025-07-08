@@ -1,6 +1,33 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+
+This is a full-stack single-page application (SPA) built with Next.js, TypeScript, Tailwind CSS, and Prisma (MySQL). It supports user authentication and post creation with admin moderation.
+
+Features
+User Registration & Login
+
+Passwords are hashed and JWT tokens are used for secure authentication.
+
+Create Posts
+
+Users can publish posts with optional images.
+
+Posts are saved in the database but not visible to others until approved.
+
+Admin Approval System
+
+Only the admin (by email) can access the /home admin panel.
+
+Admin can view all pending posts and approve them with one click.
+
+Post Listing
+
+Only approved posts are shown on the public homepage.
+
+Secure Actions
+
+All post creation and deletion are protected by JWT-based authentication.
+
 
 First, run the development server:
 
