@@ -8,16 +8,18 @@ const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { params } = context;
+
   const authHeader = req.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const token = authHeader.split(' ')[1];
-  let payload: any;
 
+  let payload: any;
   try {
     payload = verify(token, SECRET);
   } catch {
@@ -28,11 +30,19 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(params.id);
-  const updated = await prisma.post.update({
-    where: { id: postId },
-    data: { approved: true },
-  });
+  const postId = Number(params.id);
+  if (isNaN(postId)) {
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+  }
 
-  return NextResponse.json({ message: 'Post approved', post: updated });
+  try {
+    const updated = await prisma.post.update({
+      where: { id: postId },
+      data: { approved: true },
+    });
+
+    return NextResponse.json({ message: 'Post approved', post: updated });
+  } catch (err) {
+    return NextResponse.json({ error: 'Failed to update post' }, { status: 500 });
+  }
 }
