@@ -6,20 +6,17 @@ const prisma = new PrismaClient();
 const SECRET = process.env.JWT_SECRET!;
 const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
-export async function PATCH(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const token = authHeader.split(' ')[1];
-  let payload: { email: string };
+  let payload: any;
 
   try {
-    payload = verify(token, SECRET) as { email: string };
+    payload = verify(token, SECRET);
   } catch {
     return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
   }
