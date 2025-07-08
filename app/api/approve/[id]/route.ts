@@ -8,7 +8,7 @@ const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -16,10 +16,10 @@ export async function PATCH(
   }
 
   const token = authHeader.split(' ')[1];
-  let payload: any;
+  let payload: { email: string };
 
   try {
-    payload = verify(token, SECRET);
+    payload = verify(token, SECRET) as { email: string };
   } catch {
     return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
   }
@@ -28,7 +28,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(params.id);
+  const postId = parseInt(context.params.id);
   const updated = await prisma.post.update({
     where: { id: postId },
     data: { approved: true },
