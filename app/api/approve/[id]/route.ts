@@ -6,7 +6,10 @@ const prisma = new PrismaClient();
 const SECRET = process.env.JWT_SECRET!;
 const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
-export async function PATCH(req: NextRequest, context: { params: Record<string, string> }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -25,7 +28,7 @@ export async function PATCH(req: NextRequest, context: { params: Record<string, 
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(context.params.id);
+  const postId = parseInt(params.id);
   const updated = await prisma.post.update({
     where: { id: postId },
     data: { approved: true },
