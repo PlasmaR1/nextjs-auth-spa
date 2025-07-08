@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const SECRET = process.env.JWT_SECRET!;
 const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
-export async function PATCH(
+export default function PATCH(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
@@ -36,7 +36,7 @@ export async function PATCH(
   }
 
   try {
-    const updated = await prisma.post.update({
+    const updated = prisma.post.update({
       where: { id: postId },
       data: { approved: true },
     });
