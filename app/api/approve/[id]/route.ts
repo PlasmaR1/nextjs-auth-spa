@@ -8,7 +8,7 @@ const ADMIN_EMAIL = 'zachzou@foxmail.com';
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } } 
+  context: { params: Record<string, string> } 
 ) {
   const authHeader = req.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -28,7 +28,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const postId = parseInt(context.params.id);
+  const postId = parseInt(context.params.id); // context.params
   const updated = await prisma.post.update({
     where: { id: postId },
     data: { approved: true },
