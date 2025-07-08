@@ -7,7 +7,7 @@ const SECRET = process.env.JWT_SECRET!;
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = req.headers.get('authorization');
@@ -23,8 +23,8 @@ export async function DELETE(
     } catch (err) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 403 });
     }
-
-    const postId = parseInt(params.id);
+    const resolvedParams = await params;
+    const postId = parseInt(resolvedParams.id);
     const user = await prisma.user.findUnique({ where: { email: payload.email } });
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
