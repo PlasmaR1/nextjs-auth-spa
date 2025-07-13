@@ -1,27 +1,10 @@
 Developers Manual
 This project is a role-based content publishing platform built with Next.js, MySQL, and JWT authentication. It allows users to register, log in, and submit posts, which remain hidden until reviewed and approved by an administrator. The system ensures secure access control, separates admin and user interfaces, and supports deployment on modern cloud platforms like Railway and Vercel. It demonstrates the practical implementation of token-based authentication, Prisma ORM, and conditional rendering based on user roles.
 
+
 System Overview
 This is an application (SPA) built with Next.js App Router, using MySQL (via Prisma ORM) for data storage and JWT for authentication. Users can register, log in, and publish posts. Each post is marked as pending by default. An admin user, identified by a specific email, can access a protected admin panel to review and approve posts. Only approved posts are shown on the public homepage. The app includes token-based route protection, role-based access, and serverless API endpoints deployed via Railway.
 
-
-Tools:
-Tools
-Description
-Next.js
-Front-end framework, App Router mode
-TypeScript
-Strong type support, instant response for changes, improved development experience
-Tailwind CSS
-Atomic CSS, responsive layout
-Git + GitHub
-Version control and collaborative development
-Railway
-A vendor for cloud deployment
-
-
-
-Development Environment
 
 ### 📁 Project Structure
 
