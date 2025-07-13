@@ -1,21 +1,20 @@
 ###  Developers Manual
 
-```text
 This project is a role-based content publishing platform built with Next.js, MySQL, and JWT authentication. 
 It allows users to register, log in, and submit posts, which remain hidden until reviewed and approved by an administrator. 
 The system ensures secure access control, separates admin and user interfaces, and supports deployment on modern cloud platforms like Railway and Vercel. 
 It demonstrates the practical implementation of token-based authentication, Prisma ORM, and conditional rendering based on user roles.
-```
+
 
 ###  System Overview
 
-```text
+
 This is an application (SPA) built with Next.js App Router, using MySQL (via Prisma ORM) for data storage and JWT for authentication. 
 Users can register, log in, and publish posts. Each post is marked as pending by default. 
 An admin user, identified by a specific email, can access a protected admin panel to review and approve posts. 
 Only approved posts are shown on the public homepage. The app includes token-based route protection, role-based access, 
 and serverless API endpoints deployed via Railway.
-```
+
 
 
 
@@ -64,7 +63,7 @@ nextjs-auth-spa/
 
 ### Data model design
 
-```text
+
 Data tables include:
 
 User: contains id, email, password (encrypted)
@@ -114,11 +113,11 @@ app/api/login/route.ts
 
 POST : Compare username and password from MySQL
 
-```
+
 
 ### Deployment Summary: nextjs-auth-spa on Railway 
 
-```text
+
 
 1. Upload GitHub Repository
 Push the project code to GitHub repository: 
@@ -141,18 +140,20 @@ https://github.com/PlasmaR1/nextjs-auth-spa
 - The website will be live 
 - Assigned Railway URL: https://nextjs-auth-spa-production.up.railway.app/
 
-```
+
 
 
 ### Summary
 
-```text
+
 
 This project is a single-page application (SPA) built with Next.js, Tailwind CSS, Prisma, and MySQL, featuring JWT-based user authentication, secure post creation, and admin moderation.
 Core Features:
 Users can register and log in using a secure system with hashed passwords. After logging in, they can create posts with optional images. Posts are not immediately visible to the public; they must be approved by an admin via a dedicated admin panel. Only approved posts are displayed on the homepage. All API routes are protected using JWT, ensuring secure access to create or delete actions. The application is deployed on Railway, with environment-specific database configuration through Prisma.
 Potential Future Enhancements:
 This project just meets the basic requirement of the guideline description. For further development, these functions will be added in the future project
+
+```text
 Video upload to cloud storage like AWS S3 or Cloudinary
 
 
@@ -174,5 +175,7 @@ Role-based access control (e.g., moderators)
 Admin email notifications for pending posts
 
 ```
+
+
 
 
