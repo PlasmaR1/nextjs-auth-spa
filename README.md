@@ -1,63 +1,170 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Developers Manual
+This project is a role-based content publishing platform built with Next.js, MySQL, and JWT authentication. It allows users to register, log in, and submit posts, which remain hidden until reviewed and approved by an administrator. The system ensures secure access control, separates admin and user interfaces, and supports deployment on modern cloud platforms like Railway and Vercel. It demonstrates the practical implementation of token-based authentication, Prisma ORM, and conditional rendering based on user roles.
+
+System Overview
+This is an application (SPA) built with Next.js App Router, using MySQL (via Prisma ORM) for data storage and JWT for authentication. Users can register, log in, and publish posts. Each post is marked as pending by default. An admin user, identified by a specific email, can access a protected admin panel to review and approve posts. Only approved posts are shown on the public homepage. The app includes token-based route protection, role-based access, and serverless API endpoints deployed via Railway.
 
 
-This is a full-stack single-page application (SPA) built with Next.js, TypeScript, Tailwind CSS, and Prisma (MySQL). It supports user authentication and post creation with admin moderation.
-
-Features
-User Registration & Login
-
-Passwords are hashed and JWT tokens are used for secure authentication.
-
-Create Posts
-
-Users can publish posts with optional images.
-
-Posts are saved in the database but not visible to others until approved.
-
-Admin Approval System
-
-Only the admin (by email) can access the /home admin panel.
-
-Admin can view all pending posts and approve them with one click.
-
-Post Listing
-
-Only approved posts are shown on the public homepage.
-
-Secure Actions
-
-All post creation and deletion are protected by JWT-based authentication.
+Tools:
+Tools
+Description
+Next.js
+Front-end framework, App Router mode
+TypeScript
+Strong type support, instant response for changes, improved development experience
+Tailwind CSS
+Atomic CSS, responsive layout
+Git + GitHub
+Version control and collaborative development
+Railway
+A vendor for cloud deployment
 
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Development Environment
+Project structure:
+nextjs-auth-spa/
+├── app/
+│   ├── api/
+│   │   ├── approve/
+│   │   │   └── [id]/
+│   │   │       └── route.ts       # PATCH: Admin approves posts
+│   │   ├── posts/
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts       # DELETE: User deletes post by ID
+│   │   │   └── route.ts           # GET approved posts, POST new post
+│   │   ├── register/
+│   │   │   └── route.ts           # POST: User registration with password hashing
+│   │   ├── login/
+│   │   │   └── route.ts           # POST: JWT login
+│   │   └── unapproved-posts/
+│   │       └── route.ts           # GET: Admin fetches unapproved posts
+│   ├── home/
+│   │   └── page.tsx               # Admin dashboard or welcome message
+│   ├── register/
+│   │   └── page.tsx               # Registration form
+│   ├── login/
+│   │   └── page.tsx               # Login form
+│   ├── page.tsx                   # Public page showing approved posts
+├── lib/
+│   └── jwt.ts                     # (Optional) JWT utility functions
+├── prisma/
+│   ├── schema.prisma              # Prisma schema: User, Post, etc.
+│   └── migrations/                # Auto-generated migration files
+├── public/                        # Optional: static files like favicon or images
+├── styles/                        # Optional: global styles
+│   └── globals.css
+├── .env                           # Environment variables (e.g., DATABASE_URL, JWT_SECRET)
+├── .eslintrc.json                 # Linting rules
+├── next.config.js or ts          # Next.js config
+├── tsconfig.json                 # TypeScript config
+├── package.json
+└── README.md
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Data model design
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Data tables include:
 
-## Learn More
+User: contains id, email, password (encrypted)
 
-To learn more about Next.js, take a look at the following resources:
+Post: contains id, content, imageUrl, timestamp, userId , approved
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The schema.prisma handles database creation/update. To update or insert new database attributes on locahost you need to update content at schema.prisma then simply type on command: npx prisma migrate dev -name- (Locahost only)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+Database structure (Same as deployed)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Authentication
+
+We use JSON Web Token (JWT) for authentication and bcryptjs for password encryption.
+
+Global: JWT token authentication
+
+Admin Function:
+
+app/api/login/route.ts
+
+GET : finding approval status as false
+
+
+app/api/approve/[id]/route.ts
+
+PATCH : update approval states to True
+
+User function:
+
+app/api/posts/[id]/route.ts
+
+DELETE: Delete the post with the specific ID 
+
+
+app/api/posts/route.ts
+
+GET : fetch all posts from MySQL
+POST : post content to MySQL
+
+app/api/register/route.ts
+
+POST : Add user to MySQL
+
+app/api/login/route.ts
+
+POST : Compare username and password from MySQL
+
+
+
+4. Deployment Summary: nextjs-auth-spa on Railway (via GitHub)
+1. Upload GitHub Repository
+Push the project code to GitHub repository: 
+https://github.com/PlasmaR1/nextjs-auth-spa
+
+2. Create MySQL Database on Railway
+- Railway workbench → New Project → Create → MySQL 
+- Copy the full MySQL connection URL
+
+3. Deploy the App
+ -Project → Create → Deploy on Github Repo
+- Create a new Railway project and link it to your GitHub repo
+- Railway will auto-detect the Next.js framework and begin the build
+
+4. Set Environment Variables in Railway
+- DATABASE_URL: Paste the MySQL connection URL from step 2 
+- JWT_SECRET: Use a secure secret string
+
+5. Access Deployed App
+- The website will be live 
+- Assigned Railway URL: https://nextjs-auth-spa-production.up.railway.app/
+
+
+
+Summary
+This project is a single-page application (SPA) built with Next.js, Tailwind CSS, Prisma, and MySQL, featuring JWT-based user authentication, secure post creation, and admin moderation.
+Core Features:
+Users can register and log in using a secure system with hashed passwords. After logging in, they can create posts with optional images. Posts are not immediately visible to the public; they must be approved by an admin via a dedicated admin panel. Only approved posts are displayed on the homepage. All API routes are protected using JWT, ensuring secure access to create or delete actions. The application is deployed on Railway, with environment-specific database configuration through Prisma.
+Potential Future Enhancements:
+This project just meets the basic requirement of the guideline description. For further development, these functions will be added in the future project
+Video upload to cloud storage like AWS S3 or Cloudinary
+
+
+User profile pages with avatar, bio, and post history
+
+
+Post editing functionality
+
+
+Comment system
+
+
+Rate limiting to prevent spam
+
+
+Role-based access control (e.g., moderators)
+
+
+Admin email notifications for pending posts
+
+
+
+
