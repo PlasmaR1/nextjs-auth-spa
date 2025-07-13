@@ -4,7 +4,6 @@ This project is a role-based content publishing platform built with Next.js, MyS
 It allows users to register, log in, and submit posts, which remain hidden until reviewed and approved by an administrator. 
 The system ensures secure access control, separates admin and user interfaces, and supports deployment on modern cloud platforms like Railway and Vercel. 
 It demonstrates the practical implementation of token-based authentication, Prisma ORM, and conditional rendering based on user roles.
-</div>
 
 ###  System Overview
 
@@ -176,6 +175,8 @@ Role-based access control (e.g., moderators)
 Admin email notifications for pending posts
 
 ```
+</div>
+
 
 
 
