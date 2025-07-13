@@ -1,5 +1,7 @@
-###  Developers Manual
 <div align="justify">
+
+###  Developers Manual
+
 This project is a role-based content publishing platform built with Next.js, MySQL, and JWT authentication. 
 It allows users to register, log in, and submit posts, which remain hidden until reviewed and approved by an administrator. 
 The system ensures secure access control, separates admin and user interfaces, and supports deployment on modern cloud platforms like Railway and Vercel. 
@@ -74,16 +76,16 @@ The schema.prisma handles database creation/update. To update or insert new data
 
 Database structure (Same as deployed)
 
-
 Authentication
 
-We use JSON Web Token (JWT) for authentication and bcryptjs for password encryption.
+```text
+JSON Web Token (JWT) for authentication and bcryptjs for password encryption.
+
 
 Global: JWT token authentication
 
 Admin Function:
 
-```text
 app/api/login/route.ts
 
 GET : finding approval status as false
