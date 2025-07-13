@@ -22,7 +22,10 @@ A vendor for cloud deployment
 
 
 Development Environment
-Project structure:
+
+### 📁 Project Structure
+
+```text
 nextjs-auth-spa/
 ├── app/
 │   ├── api/
@@ -52,14 +55,15 @@ nextjs-auth-spa/
 │   ├── schema.prisma              # Prisma schema: User, Post, etc.
 │   └── migrations/                # Auto-generated migration files
 ├── public/                        # Optional: static files like favicon or images
-├── styles/                        # Optional: global styles
-│   └── globals.css
-├── .env                           # Environment variables (e.g., DATABASE_URL, JWT_SECRET)
+├── styles/
+│   └── globals.css                # Global styles
+├── .env                           # Environment variables (DATABASE_URL, JWT_SECRET)
 ├── .eslintrc.json                 # Linting rules
-├── next.config.js or ts          # Next.js config
-├── tsconfig.json                 # TypeScript config
+├── next.config.js or .ts         # Next.js configuration
+├── tsconfig.json                 # TypeScript configuration
 ├── package.json
-└── README.md
+```
+
 
 
 Data model design
